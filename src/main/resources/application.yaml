@@ -1,4 +1,7 @@
 spring:
+  profiles:
+    active: default
+
   datasource:
     url: jdbc:postgresql://localhost:5432/stripe
     username: postgres
@@ -6,15 +9,17 @@ spring:
   jpa:
     hibernate:
       ddl-auto: update
-  logging:
-    leveL:
+
+logging:
+    level:
       org:
         hibernate:
           SQL: DEBUG
-  stripe:
+
+stripe:
     endpoint:
-      secret: whsec_f6378998cc67e0b6f3258971e22e7cadee18b0b1dc44fd400a24fb183fb8f549
+      secret: "whsec_f6378998cc67e0b6f3258971e22e7cadee18b0b1dc44fd400a24fb183fb8f549"
     secret:
-      key: sk_test_51QaMf0J0Yq53Nv9RnINHItTLRScxNNqhjD49P9rWQQM7IsiCXPgWW3tVRMNuiZe30dR9k4L3ZSe4sDyNqCx17sXf00Mm7ErOmi
+      key: "sk_test_51QaMf0J0Yq53Nv9RnINHItTLRScxNNqhjD49P9rWQQM7IsiCXPgWW3tVRMNuiZe30dR9k4L3ZSe4sDyNqCx17sXf00Mm7ErOmi"
 
 
