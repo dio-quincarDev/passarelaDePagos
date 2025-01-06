@@ -1,8 +1,13 @@
 package com.stripe.stripe_payments_mentoria.services.impl;
 
 import com.stripe.exception.SignatureVerificationException;
+import com.stripe.exception.StripeException;
+import com.stripe.model.Customer;
 import com.stripe.model.Event;
+import com.stripe.model.Price;
+import com.stripe.model.Product;
 import com.stripe.net.Webhook;
+import com.stripe.param.CustomerCreateParams;
 import com.stripe.stripe_payments_mentoria.services.StripeService;
 import com.stripe.stripe_payments_mentoria.strategy.StripeStrategy;
 import org.springframework.beans.factory.annotation.Value;
@@ -43,5 +48,27 @@ public class StripeServiceImpl implements StripeService {
         } catch (SignatureVerificationException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    @Override
+    public Customer createCustomer(String email) {
+        var customerCreateParams =  CustomerCreateParams.builder()
+                .setEmail(email)
+                .build();
+        try {
+            return Customer.create(customerCreateParams);
+        }catch (StripeException e){
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    public Product createProduct(String name) {
+        return null;
+    }
+
+    @Override
+    public Price createPrice(String productId) {
+        return null;
     }
 }
