@@ -1,5 +1,6 @@
 package com.stripe.stripe_payments_mentoria.services.impl;
 
+import com.stripe.Stripe;
 import com.stripe.exception.SignatureVerificationException;
 import com.stripe.exception.StripeException;
 import com.stripe.model.Customer;
@@ -8,6 +9,8 @@ import com.stripe.model.Price;
 import com.stripe.model.Product;
 import com.stripe.net.Webhook;
 import com.stripe.param.CustomerCreateParams;
+import com.stripe.param.PriceCreateParams;
+import com.stripe.param.ProductCreateParams;
 import com.stripe.stripe_payments_mentoria.services.StripeService;
 import com.stripe.stripe_payments_mentoria.strategy.StripeStrategy;
 import org.springframework.beans.factory.annotation.Value;
@@ -22,7 +25,9 @@ public class StripeServiceImpl implements StripeService {
     private final String endpointSecret;
     private final List<StripeStrategy> stripeStrategies;
 
-    public StripeServiceImpl(@Value("${stripe.endpoint.secret}")String endpointSecret, List<StripeStrategy> stripeStrategies) {
+    public StripeServiceImpl(@Value("${stripe.endpoint.secret}") String endpointSecret, List<StripeStrategy> stripeStrategies,
+                             @Value("${stripe.secret.key") String stripeKey) {
+        Stripe.apiKey = stripeKey;
         this.endpointSecret = endpointSecret;
         this.stripeStrategies = Collections.unmodifiableList(stripeStrategies);
     }
@@ -38,7 +43,7 @@ public class StripeServiceImpl implements StripeService {
                 .filter(stripeStrategy -> stripeStrategy.isApplicable(event))
                 .findFirst()
                 .map(stripeStrategy -> stripeStrategy.process(event))
-                .orElseGet(Event:: new);
+                .orElseGet(Event::new);
     }
 
     @Override
@@ -52,23 +57,41 @@ public class StripeServiceImpl implements StripeService {
 
     @Override
     public Customer createCustomer(String email) {
-        var customerCreateParams =  CustomerCreateParams.builder()
+        var customerCreateParams = CustomerCreateParams.builder()
                 .setEmail(email)
                 .build();
         try {
             return Customer.create(customerCreateParams);
-        }catch (StripeException e){
+        } catch (StripeException e) {
             throw new RuntimeException(e);
         }
     }
 
     @Override
     public Product createProduct(String name) {
-        return null;
+        var productCreateParams = ProductCreateParams.builder()
+                .setName(name)
+                .setType(ProductCreateParams.Type.SERVICE)
+                .build();
+        try {
+            return Product.create(productCreateParams);
+        } catch (StripeException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
     public Price createPrice(String productId) {
-        return null;
+        var createPrice = PriceCreateParams.builder()
+                .setCurrency("usd")
+                .setProduct(productId)
+                .setUnitAmount(4000L)
+                .build();
+        try {
+            return Price.create(createPrice);
+        } catch (StripeException e) {
+            throw new RuntimeException(e);
+        }
+
     }
 }
