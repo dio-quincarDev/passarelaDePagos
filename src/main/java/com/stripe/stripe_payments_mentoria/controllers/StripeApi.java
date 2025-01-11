@@ -1,6 +1,9 @@
 package com.stripe.stripe_payments_mentoria.controllers;
 
 import com.stripe.stripe_payments_mentoria.commons.constants.ApiPathConstants;
+import com.stripe.stripe_payments_mentoria.commons.dto.CheckoutRequestDto;
+import com.stripe.stripe_payments_mentoria.commons.dto.CheckoutResponseDto;
+import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -15,5 +18,9 @@ public interface StripeApi {
             @RequestHeader ("Stripe-Signature") String stripeHeader
     );
 
+    @PostMapping(value = "/checkout")
+    ResponseEntity<CheckoutResponseDto> createCheckout(
+            @RequestBody @Valid CheckoutRequestDto checkoutRequestDto
+    );
 
 }

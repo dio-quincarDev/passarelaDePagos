@@ -7,18 +7,23 @@ import com.stripe.model.Customer;
 import com.stripe.model.Event;
 import com.stripe.model.Price;
 import com.stripe.model.Product;
+import com.stripe.model.checkout.Session;
 import com.stripe.net.Webhook;
 import com.stripe.param.CustomerCreateParams;
 import com.stripe.param.PriceCreateParams;
+import com.stripe.param.PriceListParams;
 import com.stripe.param.ProductCreateParams;
+
+
+import com.stripe.param.checkout.SessionCreateParams;
+import com.stripe.stripe_payments_mentoria.commons.dto.CheckoutRequestDto;
+import com.stripe.stripe_payments_mentoria.commons.dto.CheckoutResponseDto;
 import com.stripe.stripe_payments_mentoria.services.StripeService;
 import com.stripe.stripe_payments_mentoria.strategy.StripeStrategy;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @Service
 public class StripeServiceImpl implements StripeService {
@@ -93,5 +98,52 @@ public class StripeServiceImpl implements StripeService {
             throw new RuntimeException(e);
         }
 
+    }
+
+    @Override
+    public CheckoutResponseDto createCheckout(CheckoutRequestDto checkoutRequestDto) {
+        var priceId = getPriceIdForProduct(checkoutRequestDto.getProductId());
+        var session = SessionCreateParams.builder()
+                .setCustomer(checkoutRequestDto.getCustomerId())
+                .setSuccessUrl("http://localhost:8080")
+                .setCancelUrl("http://localhost:8080")
+                .setMode(SessionCreateParams.Mode.PAYMENT)
+                .addLineItem(SessionCreateParams.LineItem.builder()
+                        .setPrice((String) priceId)
+                        .setQuantity(1L)
+                        .build()
+                )
+                .putMetadata("metadata", String.valueOf(extraMetadata(checkoutRequestDto.getProductId())))
+                .build();
+
+        try {
+            return Optional.of(Session.create(session))
+                    .map(sessionCreated -> CheckoutResponseDto.builder()
+                           .urlPayment(sessionCreated.getUrl())
+                           .build())
+                    .orElseThrow(() -> new RuntimeException("Error creating checkout"));
+        } catch (StripeException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private Map<String, Object> extraMetadata(String productId) {
+        Map<String, Object> metadata = new HashMap<String, Object>();
+        metadata.put("productId", productId);
+        return metadata;
+    }
+
+    private Object getPriceIdForProduct(String productId) {
+        List<Price>prices = null;
+
+        try {
+            prices = Price.list(PriceListParams.builder().setProduct(productId).build()).getData();
+        } catch (StripeException e) {
+            throw new RuntimeException(e);
+        }
+        return prices.stream()
+                .findFirst()
+                .map(Price::getId)
+                .orElseThrow(()-> new RuntimeException("Price not found"));
     }
 }

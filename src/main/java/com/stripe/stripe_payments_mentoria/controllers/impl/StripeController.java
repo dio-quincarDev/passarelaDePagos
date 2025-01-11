@@ -1,5 +1,7 @@
 package com.stripe.stripe_payments_mentoria.controllers.impl;
 
+import com.stripe.stripe_payments_mentoria.commons.dto.CheckoutRequestDto;
+import com.stripe.stripe_payments_mentoria.commons.dto.CheckoutResponseDto;
 import com.stripe.stripe_payments_mentoria.controllers.StripeApi;
 import com.stripe.stripe_payments_mentoria.services.StripeService;
 import org.springframework.http.ResponseEntity;
@@ -18,5 +20,10 @@ public class StripeController implements StripeApi {
         var event = stripeService.constructEvent(payload, stripeHeader);
         stripeService.manageWebhooks(event);
         return ResponseEntity.noContent().build();
+    }
+
+    @Override
+    public ResponseEntity<CheckoutResponseDto> createCheckout(CheckoutRequestDto checkoutRequestDto) {
+        return ResponseEntity.ok(stripeService.createCheckout(checkoutRequestDto));
     }
 }
