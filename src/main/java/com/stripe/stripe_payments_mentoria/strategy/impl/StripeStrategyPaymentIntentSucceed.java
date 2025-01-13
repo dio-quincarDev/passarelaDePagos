@@ -29,8 +29,8 @@ public class StripeStrategyPaymentIntentSucceed implements StripeStrategy {
                 .map(this::deserialize)
                 .map(this::mapToEntity)
                 .map(paymentRepository::save)
-                .map(given->event)
-                .orElseThrow(()-> new RuntimeException("Error processing"));
+                .map(given -> event)
+                .orElseThrow(() -> new RuntimeException("Error processing"));
     }
 
     private Payment mapToEntity(PaymentIntent paymentIntent) {
@@ -45,6 +45,6 @@ public class StripeStrategyPaymentIntentSucceed implements StripeStrategy {
 
     private PaymentIntent deserialize(Event event) {
         return (PaymentIntent) event.getDataObjectDeserializer().getObject()
-                .orElseThrow(()-> new RuntimeException("Error deserializing object"));
+                .orElseThrow(() -> new RuntimeException("Error deserializing object"));
     }
 }

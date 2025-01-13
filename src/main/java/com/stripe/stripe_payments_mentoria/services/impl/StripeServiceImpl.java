@@ -40,7 +40,8 @@ public class StripeServiceImpl implements StripeService {
     @Override
     public void manageWebhooks(Event event) {
         Optional.of(event)
-                .map(this::processStrategy);
+                .map(this::processStrategy)
+                .orElseThrow(()-> new RuntimeException("Error Processing Webhook"));
     }
 
     private Event processStrategy(Event event) {
