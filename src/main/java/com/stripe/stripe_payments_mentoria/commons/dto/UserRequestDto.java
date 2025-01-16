@@ -11,10 +11,10 @@ import lombok.*;
 @Builder
 public class UserRequestDto {
     @Email
-    @NotNull
+    @NotNull(message = "No email specified")
     private String email;
-    @NotNull
+    @NotNull(message = "No has escrito la clave")
     private String password;
-    @NotNull
+    @NotNull(message = "No has escrito el nombre")
     private String name;
 }

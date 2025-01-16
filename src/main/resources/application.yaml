@@ -1,7 +1,6 @@
 spring:
   profiles:
     active: default
-
   datasource:
     url: jdbc:postgresql://localhost:5432/stripe
     username: postgres
@@ -9,20 +8,16 @@ spring:
   jpa:
     show-sql: true
     properties:
-      hibernate:
+      hibernate: # Indentación correcta
         format_sql: true
-        ddl-auto: update
-
+        ddl-auto: update # Indentación correcta
 logging:
-    level:
-      org:
-        hibernate:
-          SQL: DEBUG
-
+  level:
+    org:
+      hibernate:
+        SQL: DEBUG
 stripe:
-    endpoint:
-      secret: "whsec_f6378998cc67e0b6f3258971e22e7cadee18b0b1dc44fd400a24fb183fb8f549"
-    secret:
-      key: "sk_test_51QaMf0J0Yq53Nv9RnINHItTLRScxNNqhjD49P9rWQQM7IsiCXPgWW3tVRMNuiZe30dR9k4L3ZSe4sDyNqCx17sXf00Mm7ErOmi"
-
-
+  endpoint:
+    secret: "whsec_f6378998cc67e0b6f3258971e22e7cadee18b0b1dc44fd400a24fb183fb8f549"
+  secret:
+    key: "sk_test_51QaMf0J0Yq53Nv9RnINHItTLRScxNNqhjD49P9rWQQM7IsiCXPgWW3tVRMNuiZe30dR9k4L3ZSe4sDyNqCx17sXf00Mm7ErOmi"
